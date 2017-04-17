@@ -83,6 +83,9 @@ function _payload() {
  */
 function _parse(url) {
     var response = UrlFetchApp.fetch(url, _payload());
+    var code = result.getResponseCode();
+    if (code != 200)
+        throw new Error(response.message);
     return JSON.parse(response.getContentText());
 }
 
@@ -95,6 +98,7 @@ function _parse(url) {
  * @param {string} [timestamp]
  * dummy parameter for update feature
  * @returns {Number} coversion value
+ * @customfunction
  */
 function EXANTECROSSRATES(from, to, timestamp) {
     var url = BASE_URL + "/crossrates/" + from + "/" + to;
@@ -110,6 +114,7 @@ function EXANTECROSSRATES(from, to, timestamp) {
  * @example
  * var name = EXANTEGROUP("Si", "name");
  * @returns {number|string} property value for specified group
+ * @customfunction
  */
 function EXANTEGROUP(group, field) {
     var url = BASE_URL + "/groups/" + group;
@@ -125,6 +130,7 @@ function EXANTEGROUP(group, field) {
  * @example
  * var id = EXANTEGROUPNEAREST("Si", "id");
  * @returns {number|string} property value for nearest expiration of specified group
+ * @customfunction
  */
 function EXANTEGROUPNEAREST(group, field) {
     var url = BASE_URL + "/groups/" + group + "/nearest";
@@ -147,6 +153,7 @@ function EXANTEGROUPNEAREST(group, field) {
  * var lowPrice = EXANTEOHLC("EUR/USD.E.FX", 60, "low");
  * var closePrice = EXANTEOHLC("EUR/USD.E.FX", 60, "close");
  * @returns {number} OHLC property for specified symbol and duration
+ * @customfunction
  */
 function EXANTEOHLC(symbol, duration, what, timestamp) {
     var url = BASE_URL + "/ohlc/" + encodeURIComponent(symbol) + "/" + duration + "?size=1";
@@ -162,6 +169,7 @@ function EXANTEOHLC(symbol, duration, what, timestamp) {
  * @example
  * var description = EXANTESYMBOL("AAPL.NASDAQ", "description");
  * @returns {string|number} property value for specified symbol
+ * @customfunction
  */
 function EXANTESYMBOL(symbol, field) {
     var url = BASE_URL + "/symbols/" + encodeURIComponent(symbol);
@@ -191,6 +199,7 @@ function EXANTEUPDATE() {
  * @example
  * var mid = EXANTEMID("EUR/USD.E.FX");
  * @returns {number} mid value for specified symbol
+ * @customfunction
  */
 function EXANTEMID(symbol, timestamp) {
     return EXANTEOHLC(symbol, 60, "close");
