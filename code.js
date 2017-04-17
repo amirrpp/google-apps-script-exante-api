@@ -1,5 +1,34 @@
 /**
- * @remark workaround to ask permissions only for active spreadsheet
+ * @license
+ * Copyright (c) 2017 EXANTE
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+/**
+ * @file Google Apps Script shows how to work with EXANTE API functions
+ * @author EXANTE
+ */
+
+/**
+ * workaround to ask permissions only for active spreadsheet, see
+ * https://developers.google.com/apps-script/guides/services/authorization
+ * for details
  * @OnlyCurrentDoc
  */
 
@@ -33,28 +62,28 @@ var TOKEN = "paste-your-token-here";
 
 /**
  * default payload for get requests
- * @return {object} payload object, see
+ * @returns {object} payload object, see
  * https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app
  * for details
  */
 function _payload() {
-  return {
-    "method": "get",
-    "headers": {
-      "Authorization": "Bearer " + TOKEN
-    }
-  };
+    return {
+        "method": "get",
+        "headers": {
+            "Authorization": "Bearer " + TOKEN
+        }
+    };
 }
 
 /**
  * default get request worker
  * @param {string} url
  * url to fetch GET request
- * @return {object} parsed JSON object as is
+ * @returns {object} parsed JSON object as is
  */
 function _parse(url) {
-  var response = UrlFetchApp.fetch(url, _payload());
-  return JSON.parse(response.getContentText());
+    var response = UrlFetchApp.fetch(url, _payload());
+    return JSON.parse(response.getContentText());
 }
 
 /**
@@ -65,11 +94,11 @@ function _parse(url) {
  * convert to currency
  * @param {string} [timestamp]
  * dummy parameter for update feature
- * @return {Number} coversion value
+ * @returns {Number} coversion value
  */
 function EXANTECROSSRATES(from, to, timestamp) {
-  var url = BASE_URL + "/crossrates/" + from + "/" + to;
-  return _parse(url)["rate"];
+    var url = BASE_URL + "/crossrates/" + from + "/" + to;
+    return _parse(url)["rate"];
 }
 
 /**
@@ -80,11 +109,11 @@ function EXANTECROSSRATES(from, to, timestamp) {
  * property name
  * @example
  * var name = EXANTEGROUP("Si", "name");
- * @return {number|string} property value for specified group
+ * @returns {number|string} property value for specified group
  */
 function EXANTEGROUP(group, field) {
-  var url = BASE_URL + "/groups/" + group;
-  return _parse(url)[field];
+    var url = BASE_URL + "/groups/" + group;
+    return _parse(url)[field];
 }
 
 /**
@@ -95,11 +124,11 @@ function EXANTEGROUP(group, field) {
  * property name
  * @example
  * var id = EXANTEGROUPNEAREST("Si", "id");
- * @return {number|string} property value for nearest expiration of specified group
+ * @returns {number|string} property value for nearest expiration of specified group
  */
 function EXANTEGROUPNEAREST(group, field) {
-  var url = BASE_URL + "/groups/" + group + "/nearest";
-  return _parse(url)[field];
+    var url = BASE_URL + "/groups/" + group + "/nearest";
+    return _parse(url)[field];
 }
 
 /**
@@ -117,11 +146,11 @@ function EXANTEGROUPNEAREST(group, field) {
  * var highPrice = EXANTEOHLC("EUR/USD.E.FX", 60, "high");
  * var lowPrice = EXANTEOHLC("EUR/USD.E.FX", 60, "low");
  * var closePrice = EXANTEOHLC("EUR/USD.E.FX", 60, "close");
- * @return {number} OHLC property for specified symbol and duration
+ * @returns {number} OHLC property for specified symbol and duration
  */
 function EXANTEOHLC(symbol, duration, what, timestamp) {
-  var url = BASE_URL + "/ohlc/" + encodeURIComponent(symbol) + "/" + duration + "?size=1";
-  return _parse(url)[0][what];
+    var url = BASE_URL + "/ohlc/" + encodeURIComponent(symbol) + "/" + duration + "?size=1";
+    return _parse(url)[0][what];
 }
 
 /**
@@ -132,13 +161,13 @@ function EXANTEOHLC(symbol, duration, what, timestamp) {
  * property name
  * @example
  * var description = EXANTESYMBOL("AAPL.NASDAQ", "description");
- * @return {string|number} property value for specified symbol
+ * @returns {string|number} property value for specified symbol
  */
 function EXANTESYMBOL(symbol, field) {
-  var url = BASE_URL + "/symbols/" + encodeURIComponent(symbol);
-  if (field in SYMBOL_SPEC_FIELDS)
-    url += "/specification";
-  return _parse(url)[field];
+    var url = BASE_URL + "/symbols/" + encodeURIComponent(symbol);
+    if (field in SYMBOL_SPEC_FIELDS)
+        url += "/specification";
+    return _parse(url)[field];
 }
 
 /**
@@ -149,8 +178,8 @@ function EXANTESYMBOL(symbol, field) {
  * functions
  */
 function EXANTEUPDATE() {
-  SpreadsheetApp.getActiveSheet().getRange('A1').setValue(new Date().toTimeString())
-  SpreadsheetApp.flush();
+    SpreadsheetApp.getActiveSheet().getRange('A1').setValue(new Date().toTimeString());
+    SpreadsheetApp.flush();
 }
 
 /**
@@ -161,8 +190,8 @@ function EXANTEUPDATE() {
  * dummy parameter for update feature
  * @example
  * var mid = EXANTEMID("EUR/USD.E.FX");
- * @return {number} mid value for specified symbol
+ * @returns {number} mid value for specified symbol
  */
 function EXANTEMID(symbol, timestamp) {
-  return EXANTEOHLC(symbol, 60, "close");
+    return EXANTEOHLC(symbol, 60, "close");
 }
