@@ -4,31 +4,37 @@
  */
 
 /**
- * @brief base URL part
+ * base URL part
+ * @constant {string}
  */
 var BASE_URL_API = "/md/1.0";
 /**
- * @brief base URL part, edit for other environments
+ * base URL part, edit for other environments
+ * @constant {string}
  */
 var BASE_URL_HOST = "https://api-demo.exante.eu";
 /**
- * @brief base URL
+ * base URL
+ * @constant {string}
  */
 var BASE_URL = BASE_URL_HOST + BASE_URL_API;
 /**
- * @brief fields which are described in /symbol/:symbolId/specification instead
+ * fields which are described in /symbol/:symbolId/specification instead
  * of default API
+ * @constant {string[]}
  */
 var SYMBOL_SPEC_FIELDS = ["leverage", "lotSize", "contractMultiplier", "priceUnit", "units"];
 /**
- * @brief auth token, generated from jwt.io. See https://developers.exante.eu/tutorials/auth-basics/
+ * auth token, generated from jwt.io. See https://developers.exante.eu/tutorials/auth-basics/
  * for more details
+ * @constant {string}
  */
 var TOKEN = "paste-your-token-here";
 
 /**
- * @brief default payload for get requests
- * @return payload object, see https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app
+ * default payload for get requests
+ * @return {object} payload object, see
+ * https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app
  * for details
  */
 function _payload() {
@@ -41,10 +47,10 @@ function _payload() {
 }
 
 /**
- * @brief default get request worker
- * @param url
+ * default get request worker
+ * @param {string} url
  * url to fetch GET request
- * @return parsed JSON object as is
+ * @return {object} parsed JSON object as is
  */
 function _parse(url) {
   var response = UrlFetchApp.fetch(url, _payload());
@@ -52,14 +58,14 @@ function _parse(url) {
 }
 
 /**
- * @brief crossrates for currencies
- * @param from
+ * crossrates for currencies
+ * @param {string} from
  * convert from currency
- * @param to
+ * @param {string} to
  * convert to currency
- * @param timestamp
+ * @param {string} [timestamp]
  * dummy parameter for update feature
- * @return coversion value
+ * @return {Number} coversion value
  */
 function EXANTECROSSRATES(from, to, timestamp) {
   var url = BASE_URL + "/crossrates/" + from + "/" + to;
@@ -67,12 +73,14 @@ function EXANTECROSSRATES(from, to, timestamp) {
 }
 
 /**
- * @brief symbols group information
- * @param group
+ * symbols group information
+ * @param {string} group
  * group name
- * @param field
+ * @param {string} field
  * property name
- * @return property value for specified group
+ * @example
+ * var name = EXANTEGROUP("Si", "name");
+ * @return {number|string} property value for specified group
  */
 function EXANTEGROUP(group, field) {
   var url = BASE_URL + "/groups/" + group;
@@ -80,12 +88,14 @@ function EXANTEGROUP(group, field) {
 }
 
 /**
- * @brief nearest symbol of group information
- * @param group
+ * nearest symbol of group information
+ * @param {string} group
  * group name
- * @param field
+ * @param {string} field
  * property name
- * @return property value for nearest expiration of specified group
+ * @example
+ * var id = EXANTEGROUPNEAREST("Si", "id");
+ * @return {number|string} property value for nearest expiration of specified group
  */
 function EXANTEGROUPNEAREST(group, field) {
   var url = BASE_URL + "/groups/" + group + "/nearest";
@@ -93,16 +103,21 @@ function EXANTEGROUPNEAREST(group, field) {
 }
 
 /**
- * @brief open-high-low-close value
- * @param symbol
+ * open-high-low-close value
+ * @param {string} symbol
  * symbol ID
- * @param duration
+ * @param {string|number} duration
  * OHLC duration in seconds
- * @param what
+ * @param {string} what
  * OHCL field, normally one of "open", "high", "low", "close", "timestamp"
- * @param timestamp
+ * @param {string} [timestamp]
  * dummy parameter for update feature
- * @return OHLC property for specified symbol and duration
+ * @example
+ * var openPrice = EXANTEOHLC("EUR/USD.E.FX", 60, "open");
+ * var highPrice = EXANTEOHLC("EUR/USD.E.FX", 60, "high");
+ * var lowPrice = EXANTEOHLC("EUR/USD.E.FX", 60, "low");
+ * var closePrice = EXANTEOHLC("EUR/USD.E.FX", 60, "close");
+ * @return {number} OHLC property for specified symbol and duration
  */
 function EXANTEOHLC(symbol, duration, what, timestamp) {
   var url = BASE_URL + "/ohlc/" + encodeURIComponent(symbol) + "/" + duration + "?size=1";
@@ -110,12 +125,14 @@ function EXANTEOHLC(symbol, duration, what, timestamp) {
 }
 
 /**
- * @brief symbol information
- * @param symbol
+ * symbol information
+ * @param {string} symbol
  * symbol ID
- * @param field
+ * @param {string} field
  * property name
- * @return property value for specified symbol
+ * @example
+ * var description = EXANTESYMBOL("AAPL.NASDAQ", "description");
+ * @return {string|number} property value for specified symbol
  */
 function EXANTESYMBOL(symbol, field) {
   var url = BASE_URL + "/symbols/" + encodeURIComponent(symbol);
@@ -125,7 +142,7 @@ function EXANTESYMBOL(symbol, field) {
 }
 
 /**
- * @brief dummy functions which modifies A1 cell and insert current timestamp value
+ * dummy functions which modifies A1 cell and insert current timestamp value
  * this method is actually only required for update feature (see timestamp parameter
  * in some methods), because Google Sheets does not update functions if no parameters
  * were changed, but NOW() function is not allowed to be called inside user defined
@@ -137,12 +154,14 @@ function EXANTEUPDATE() {
 }
 
 /**
- * @brief mid (average between bid and ask) value
- * @param symbol
+ * mid (average between bid and ask) value
+ * @param {string} symbol
  * symbol ID
- * @param timestamp
+ * @param {string} [timestamp]
  * dummy parameter for update feature
- * @return mid value for specified symbol
+ * @example
+ * var mid = EXANTEMID("EUR/USD.E.FX");
+ * @return {number} mid value for specified symbol
  */
 function EXANTEMID(symbol, timestamp) {
   return EXANTEOHLC(symbol, 60, "close");
